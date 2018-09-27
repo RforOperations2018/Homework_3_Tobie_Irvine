@@ -18,13 +18,14 @@ library(stringr)
 ```
 
 ## Homework 3 Description
-Each map will include: 
+Each map will include (3 maps): 
 
 .	A Basemap
-.	One map with a layer of points
-  o	Students may use either circles or markers
-.	One map with a layer of lines
-.	One map with a layer of polygons
+.1) 	One map with a layer of points
+   o	Students may use either circles or markers
+.2)	One map with a layer of lines
+.3)	One map with a layer of polygons
+Layers
 .	One of the maps must contain a variable which changes of the color of the elements or the marker with an accompanying legend
 .	One map must contain a functioning layersControl() 
 
@@ -32,39 +33,57 @@ Each map will include:
 ## Get Spatial Data from online
 
 ```{r }
-shape.data.load <- readOGR("file_name.shp", layer = "file_that_contains_shape_file", GDAL1_integer64_policy = TRUE)
+#, 
+shape.data.load <- readOGR("./Pittsburgh_Parks", layer = "Pittsburgh_Parks")
+
 #I have no idea what third argument does
+# Last argument (GDAL_integer64_policy = TRUE) results in error: INTEGER() can only #be applied to a 'integer', not a 'double'
+
 ```
 ## Using data from table and merging with spatial data
 ```{r }
-pratical.data <- read_excel() %>% mutate(foreign.key = str_pad(foreign.key, 4, pad = "0"))
+practical.data <- read.csv("Pittsburgh_Parks.csv") %>% #mutate(objectid = #str_pad(objectid, 6 , pad = "0"))
 #mutate necessary in case you need to modify column that you will use to join shape # file and data file. foreign.key is name of column of you need to modify
 
-#pick only rows that match practical datas foreign key values
-shape.data.2 <- shape.data.load[shape.data.load$GEOID %in% practical.data$foreign.key]
+#pick only rows that match practical datas foreign key values: objectid or globalid
+shape.data.2 <- shape.data.load[shape.data.load$GlobalID_2 %in% practical.data$GlobalID_2,]
 
 #merge practical.data and shape.data.2 to get file used to create base map and 
 # assign to data element of shape.data.2; MAKE SURE SORT IS FALSE
 
-shape.2.data@data <- merge(shape.data.2, practical.data, sort = FALSE, by.x = "GEOID", by.y = "foreign.key")
+shape.data.2@data <- merge(shape.data.2@data, practical.data, sort = FALSE, by.x = "GlobalID_2", by.y = "GlobalID_2")
 
 ```
-A Basemap
+##A Basemap with polygons and the ability to pick different layers
 ```{r }
 #Pick different map. Esri World Imagery is downloaded from website: add no wrap
 leaflet() %>%
-  addProviderTiles(providers$Esri.WorldImagery, options = providerTileOptions(noWrap = TRUE))
+  addProviderTiles("OpenMapSurfer.Roads", options = providerTileOptions(noWrap = TRUE), group = "Default") %>%
+  addProviderTiles("Esri.DeLorme", options = providerTileOptions(noWrap = TRUE), group = "Topographical") %>%
+  addProviderTiles(providers$Esri.WorldImagery, options = providerTileOptions(noWrap = TRUE), group = "World") %>%
+  # Layers Control
+    addLayersControl(
+      baseGroups = c("Default", "Topographical", "World"),
+      overlayGroups = c("Parks"),
+      options = layersControlOptions(collapsed = FALSE)
+    )  %>%
+  addPolygons(data = shape.data.2, group = "Parks") 
 
 ```
-One map with a layer of points
+## A basemap with a layer of lines
+```{r }
+#get map with latitude and longitude for csv or look for GEOjson file
+pa.rails <- readOGR("PaRailLines2018_07.geojson")
+leaflet(data = pa.rails) %>%
+  addProviderTiles("OpenStreetMap.Mapnik") %>% addPolylines(color = "#63CBD4")
+ 
+
+```
+## A basemap with points
 ```{r }
 
 ```
-One map with a layer of lines
-```{r }
 
-```
-One map with a layer of polygons
 ```{r }
 
 ```
