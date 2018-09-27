@@ -38,7 +38,7 @@ shape.data.load <- readOGR("file_name.shp", layer = "file_that_contains_shape_fi
 ## Using data from table and merging with spatial data
 ```{r }
 pratical.data <- read_excel() %>% mutate(foreign.key = str_pad(foreign.key, 4, pad = "0"))
-#mutate necessary in case you need to modify column that you will use to join shape # file and data file
+#mutate necessary in case you need to modify column that you will use to join shape # file and data file. foreign.key is name of column of you need to modify
 
 #pick only rows that match practical datas foreign key values
 shape.data.2 <- shape.data.load[shape.data.load$GEOID %in% practical.data$foreign.key]
@@ -46,11 +46,14 @@ shape.data.2 <- shape.data.load[shape.data.load$GEOID %in% practical.data$foreig
 #merge practical.data and shape.data.2 to get file used to create base map and 
 # assign to data element of shape.data.2; MAKE SURE SORT IS FALSE
 
-shape.2.data@data <- merge(shape.data.2, practical.data, sort = FALSE)
+shape.2.data@data <- merge(shape.data.2, practical.data, sort = FALSE, by.x = "GEOID", by.y = "foreign.key")
 
 ```
 A Basemap
 ```{r }
+#Pick different map. Esri World Imagery is downloaded from website: add no wrap
+leaflet() %>%
+  addProviderTiles(providers$Esri.WorldImagery, options = providerTileOptions(noWrap = TRUE))
 
 ```
 One map with a layer of points
