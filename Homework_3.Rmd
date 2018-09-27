@@ -1,0 +1,77 @@
+---
+title: "Homework_3_Tobie_Irvine"
+author: "Tobie Irvine"
+date: "September 26, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rgdal)
+library(leaflet)
+library(leaflet.extras)
+
+library(dplyr)
+library(readxl)
+library(stringr)
+
+```
+
+## Homework 3 Description
+Each map will include: 
+
+.	A Basemap
+.	One map with a layer of points
+  o	Students may use either circles or markers
+.	One map with a layer of lines
+.	One map with a layer of polygons
+.	One of the maps must contain a variable which changes of the color of the elements or the marker with an accompanying legend
+.	One map must contain a functioning layersControl() 
+
+
+## Get Spatial Data from online
+
+```{r }
+shape.data.load <- readOGR("file_name.shp", layer = "file_that_contains_shape_file", GDAL1_integer64_policy = TRUE)
+#I have no idea what third argument does
+```
+## Using data from table and merging with spatial data
+```{r }
+pratical.data <- read_excel() %>% mutate(foreign.key = str_pad(foreign.key, 4, pad = "0"))
+#mutate necessary in case you need to modify column that you will use to join shape # file and data file
+
+#pick only rows that match practical datas foreign key values
+shape.data.2 <- shape.data.load[shape.data.load$GEOID %in% practical.data$foreign.key]
+
+#merge practical.data and shape.data.2 to get file used to create base map and 
+# assign to data element of shape.data.2; MAKE SURE SORT IS FALSE
+
+shape.2.data@data <- merge(shape.data.2, practical.data, sort = FALSE)
+
+```
+A Basemap
+```{r }
+
+```
+One map with a layer of points
+```{r }
+
+```
+One map with a layer of lines
+```{r }
+
+```
+One map with a layer of polygons
+```{r }
+
+```
+One of the maps must contain a variable which changes of the color of the elements or the marker with an accompanying legend
+```{r}
+
+```
+One map must contain a functioning layersControl()
+```{r }
+
+```
+
+
