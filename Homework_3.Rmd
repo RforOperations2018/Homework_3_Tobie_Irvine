@@ -56,20 +56,19 @@ shape.data.2@data <- merge(shape.data.2@data, practical.data, sort = FALSE, by.x
 ```
 ##A Basemap with polygons and the ability to pick different layers
 ```{r }
-#Pick different map. Esri World Imagery is downloaded from website: add no wrap
-leaflet() %>%
-  addProviderTiles("OpenStreetMap.Mapnik", options = providerTileOptions(noWrap = TRUE), group = "Default") %>%
-  # addProviderTiles("Esri.DeLorme", options = providerTileOptions(noWrap = TRUE), group = "Topographical") %>%
-  # addProviderTiles(providers$Esri.WorldImagery, options = providerTileOptions(noWrap = TRUE), group = "World") %>%
-  # # Layers Control
-  #   addLayersControl(
-  #     baseGroups = c("Default", "Topographical", "World"),
-  #     overlayGroups = c("Parks"),
-  #     options = layersControlOptions(collapsed = FALSE)
-  #   )  %>%
-  # addPolygons(data = shape.data.2, group = "Parks") 
+#Pick color palette
+pal <- colorFactor(
+  palette = "Purples",
+  levels = shape.data.2$final_cat.y)
+
+
+leaflet() %>% addProviderTiles("OpenMapSurfer.Roads", options = providerTileOptions(noWrap = TRUE), group = "Default") %>%
+addPolygons(data = shape.data.2, color = ~pal('final_cat.y'))
+
 
 ```
+
+
 ## A basemap with a layer of lines
 ```{r }
 #get map with latitude and longitude for csv or look for GEOjson file
