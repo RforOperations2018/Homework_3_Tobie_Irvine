@@ -42,10 +42,11 @@ shape.data.load <- readOGR("./Pittsburgh_Parks", layer = "Pittsburgh_Parks")
 ```
 ## Using data from table and merging with spatial data
 ```{r }
-practical.data <- read.csv("Pittsburgh_Parks.csv") %>% #mutate(objectid = #str_pad(objectid, 6 , pad = "0"))
-#mutate necessary in case you need to modify column that you will use to join shape # file and data file. foreign.key is name of column of you need to modify
+practical.data <- read.csv("Pittsburgh_Parks_1.csv") 
+#%>% #mutate(objectid = #str_pad(objectid, 6 , pad = "0"))
+#mutate necessary in case you need to modify column that you will use to join #shape # file and data file. foreign.key is name of column of you need to modify
 
-#pick only rows that match practical datas foreign key values: objectid or globalid
+#pick only rows that match practical datas foreign key values: objectid or #globalid
 shape.data.2 <- shape.data.load[shape.data.load$GlobalID_2 %in% practical.data$GlobalID_2,]
 
 #merge practical.data and shape.data.2 to get file used to create base map and 
@@ -59,11 +60,13 @@ shape.data.2@data <- merge(shape.data.2@data, practical.data, sort = FALSE, by.x
 #Pick color palette
 pal <- colorFactor(
   palette = "Purples",
-  levels = shape.data.2$final_cat.y)
+  levels =shape.data.2$final_cat.y)
 
 
-leaflet() %>% addProviderTiles("OpenMapSurfer.Roads", options = providerTileOptions(noWrap = TRUE), group = "Default") %>%
-addPolygons(data = shape.data.2, color = ~pal('final_cat.y'))
+leaflet(shape.data.2) %>% addProviderTiles("OpenStreetMap.BlackAndWhite", options = providerTileOptions(noWrap = TRUE)) %>%
+addPolygons(stroke = FALSE, color = ~pal(final_cat.y)) %>%
+   addLegend(position = "bottomright", pal = pal, values = shape.data.2$final_cat.y , title = "Parks in Pittsburgh")
+
 
 
 ```
@@ -89,7 +92,27 @@ leaflet(data = pa.rails) %>%
 ```
 ## A basemap with points
 ```{r }
+# point.map <- readOGR("Pittsburgh_Bridges.geojson")
+# 
+# 
+# leaflet() %>%
+#   addProviderTiles("OpenMapSurfer.Roads")# %>% 
+  #addCircleMarkers(data = point.map, lat = ~Latitude, lng = ~Longitude)
+dat311 <- read.csv("2018-07-city-of-london-street.csv")
 
+leaflet(data = dat311) %>%
+  addProviderTiles("OpenStreetMap.HOT") %>%
+  addCircleMarkers(lng = ~Longitude, lat = ~Latitude, radius = 1.5)
+
+#color = ~pal311(STATUS), clusterOptions = markerClusterOptions())
+
+# %>%
+#   addLegend(position = "topright" , pal = pal311, values = dat311$STATUS, title = "Status")
+
+# 
+# leaflet(data = potOver) %>%
+#   addProviderTiles("OpenStreetMap.HOT") %>%
+#   addAwesomeMarkers(lng = ~X, lat = ~Y, icon = ~icons[REQUEST_TYPE], popup = ~REQUEST_TYPE)
 ```
 
 ```{r }
