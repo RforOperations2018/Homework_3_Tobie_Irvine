@@ -42,9 +42,9 @@ shape.data.load <- readOGR("./Pittsburgh_Parks", layer = "Pittsburgh_Parks")
 ```
 ## Using data from table and merging with spatial data
 ```{r }
+# Read in CSV File
 practical.data <- read.csv("Pittsburgh_Parks_1.csv") 
-#%>% #mutate(objectid = #str_pad(objectid, 6 , pad = "0"))
-#mutate necessary in case you need to modify column that you will use to join #shape # file and data file. foreign.key is name of column of you need to modify
+
 
 #pick only rows that match practical datas foreign key values: objectid or #globalid
 shape.data.2 <- shape.data.load[shape.data.load$GlobalID_2 %in% practical.data$GlobalID_2,]
@@ -62,7 +62,7 @@ pal <- colorFactor(
   palette = "Purples",
   levels =shape.data.2$final_cat.y)
 
-
+#Create map with legend
 leaflet(shape.data.2) %>% addProviderTiles("OpenStreetMap.BlackAndWhite", options = providerTileOptions(noWrap = TRUE)) %>%
 addPolygons(stroke = FALSE, color = ~pal(final_cat.y)) %>%
    addLegend(position = "bottomright", pal = pal, values = shape.data.2$final_cat.y , title = "Parks in Pittsburgh")
@@ -72,10 +72,12 @@ addPolygons(stroke = FALSE, color = ~pal(final_cat.y)) %>%
 ```
 
 
-## A basemap with a layer of lines
+## A basemap with a layer of railroad lines of PA with layer control.
 ```{r }
-#get map with latitude and longitude for csv or look for GEOjson file
+#get data for railroad lines from GEOjson file
 pa.rails <- readOGR("PaRailLines2018_07.geojson")
+
+#Create map
 leaflet(data = pa.rails) %>%
   #addProviderTiles("OpenStreetMap.Mapnik") %>% 
   addProviderTiles("OpenMapSurfer.Roads", options = providerTileOptions(noWrap = TRUE), group = "Default") %>%
@@ -84,47 +86,23 @@ leaflet(data = pa.rails) %>%
   # Layers Control
     addLayersControl(
       baseGroups = c("Default", "Topographical", "World"),
-      overlayGroups = c("Railroads"),
       options = layersControlOptions(collapsed = FALSE)
     )  %>% addPolylines(color = "#63CBD4", popup = ~LINENAME)
  
 
 ```
-## A basemap with points
+## A basemap with points, based on London street crime
 ```{r }
-# point.map <- readOGR("Pittsburgh_Bridges.geojson")
-# 
-# 
-# leaflet() %>%
-#   addProviderTiles("OpenMapSurfer.Roads")# %>% 
-  #addCircleMarkers(data = point.map, lat = ~Latitude, lng = ~Longitude)
-dat311 <- read.csv("2018-07-city-of-london-street.csv")
+#Import data for crimes in London
+data.crime <- read.csv("2018-07-city-of-london-street.csv")
 
-leaflet(data = dat311) %>%
+#Create map with points representing crime in London. 
+leaflet(data = data.crime) %>%
   addProviderTiles("OpenStreetMap.HOT") %>%
   addCircleMarkers(lng = ~Longitude, lat = ~Latitude, radius = 1.5)
 
-#color = ~pal311(STATUS), clusterOptions = markerClusterOptions())
-
-# %>%
-#   addLegend(position = "topright" , pal = pal311, values = dat311$STATUS, title = "Status")
-
-# 
-# leaflet(data = potOver) %>%
-#   addProviderTiles("OpenStreetMap.HOT") %>%
-#   addAwesomeMarkers(lng = ~X, lat = ~Y, icon = ~icons[REQUEST_TYPE], popup = ~REQUEST_TYPE)
 ```
 
-```{r }
 
-```
-One of the maps must contain a variable which changes of the color of the elements or the marker with an accompanying legend
-```{r}
-
-```
-One map must contain a functioning layersControl()
-```{r }
-
-```
 
 
