@@ -60,7 +60,8 @@ shape.data.2@data <- merge(shape.data.2@data, practical.data, sort = FALSE, by.x
 #Pick color palette
 pal <- colorFactor(
   palette = "Purples",
-  levels =shape.data.2$final_cat.y)
+  levels =shape.data.2$final_cat.y) # Make sure you clean your levels before creating these, you actually have a blank value which you probably should have changed to NA. Even data from the WPRDC isn't always clean!
+
 
 #Create map with legend
 leaflet(shape.data.2) %>% addProviderTiles("OpenStreetMap.BlackAndWhite", options = providerTileOptions(noWrap = TRUE)) %>%
